@@ -31,6 +31,9 @@ void getnext()
             q++;
         nxt[i] = q;
     }
+    for(int i = 0; i < len; i++)
+        printf("%d ", nxt[i]);
+    printf("\n");
 }
 
 int getans()
