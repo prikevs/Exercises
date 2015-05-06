@@ -17,7 +17,7 @@ int lcm(int a, int b)   {return a/gcd(a,b)*b;}
 const int N = 510;
 const int M = 100010;
 
-int dp[N][M];
+int dp[M];
 int need[N];
 int value[N];
 
@@ -28,19 +28,12 @@ int main()
     for(int i = 1; i <= n; i++) {
         scanf("%d %d", need+i, value+i); 
     }
-    for(int i = 0; i <= m; i++) {
-        dp[0][i] = 0;
-    }
+    memset(dp, 0, sizeof(dp));
     for(int i = 1; i <= n; i++) {
-        for(int j = 0; j <= m; j++) {
-            if (j < need[i]) {
-                dp[i][j] = dp[i-1][j];
-            }
-            else {
-                dp[i][j] = max(dp[i-1][j-need[i]] + value[i], dp[i-1][j]);
-            }
+        for(int j = m; j >= need[i]; j--) {
+            dp[j] = max(dp[j], dp[j-need[i]]+value[i]);
         }
     }
-    printf("%d\n", dp[n][m]);
+    printf("%d\n", dp[m]);
     return 0;
 }
