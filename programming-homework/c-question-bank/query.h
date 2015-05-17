@@ -1,0 +1,1 @@
+void Query(Ques *rootp);

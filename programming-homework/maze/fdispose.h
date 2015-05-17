@@ -1,0 +1,1 @@
+int Readfromfile(char *filename);
