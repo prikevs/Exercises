@@ -1,0 +1,44 @@
+ALTER TABLE `order` PARTITION BY RANGE(time) (
+ PARTITION p20160101 VALUES LESS THAN (TO_DAY('2016-01-01')),
+ PARTITION p20160201 VALUES LESS THAN (TO_DAY('2016-02-01')),
+ PARTITION p20160301 VALUES LESS THAN (TO_DAY('2016-03-01')),
+ PARTITION p20160401 VALUES LESS THAN (TO_DAY('2016-04-01')),
+ PARTITION p20160501 VALUES LESS THAN (TO_DAY('2016-05-01')),
+ PARTITION p20160601 VALUES LESS THAN (TO_DAY('2016-06-01')),
+ PARTITION p20160701 VALUES LESS THAN (TO_DAY('2016-07-01')),
+ PARTITION p20160801 VALUES LESS THAN (TO_DAY('2016-08-01')),
+ PARTITION p20160901 VALUES LESS THAN (TO_DAY('2016-09-01')),
+ PARTITION p20161001 VALUES LESS THAN (TO_DAY('2016-10-01')),
+ PARTITION p20161101 VALUES LESS THAN (TO_DAY('2016-11-01')),
+ PARTITION p20161201 VALUES LESS THAN (TO_DAY('2016-12-01'))
+);
+drop PROCEDURE IF EXISTS set_partition;
+create PROCEDURE set_partition();
+begin
+ declare exit handler for sqlexception rollback;
+ start TRANSACTION;
+ select REPLACE(partition_name,'p','') into @P12_Name from INFORMATION_SCHEMA.PARTITIONS
+ SET @Max_date= date(DATE_ADD(@P12_Name+0,INTERVAL 1 MONTH)) + 0;
+ SET @s1=concat('ALTER TABLE elema ADD PARTITION (PARTITION p',@Max_date,' VALUES LESS THAN (TO_DAYS ('
+ PREPARE stmt2 FROM @s1;
+ EXECUTE stmt2;
+ DEALLOCATE PREPARE stmt2;
+ /* ?????????????????????????????????????? ??
+????????????????????????
+??????????
+??????????vent
+/* ????????????????????????????????????????????
+ select partition_name into @P0_Name from INFORMATION_SCHEMA.PARTITIONS where TABLE_SCHEMA
+ SET @s=concat('ALTER TABLE terminal_parameter DROP PARTITION p',@P0_Name);
+ PREPARE stmt1 FROM @s;
+ EXECUTE stmt1;
+ DEALLOCATE PREPARE stmt1;
+/* ??????*/
+ COMMIT ;
+end;
+/*????????????*/
+CREATE EVENT e_Set_Partition
+ ON SCHEDULE
+ EVERY 1 MONTH STARTS '2017-01-01 00:00:00'
+ DO
+ call set_partition();
